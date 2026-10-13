@@ -198,8 +198,10 @@ def main():
     mode = 'qwen_7B'
     cache_dir = "./cache/"
     data_path = "./output/final_dataset_medmcqa_test.json"
-    ds_pretrain_config = "/home/jwang/Project/uptodata/medical_rules/train_colbert/ColBERT/ds_configs/stage2.json"
-    ds_finetune_config = "/home/jwang/Project/uptodata/medical_rules/train_colbert/ColBERT/ds_configs/stage2.json"
+    ds_finetune_config = os.environ.get("TARSE_DEEPSPEED_CONFIG")
+    if not ds_finetune_config or not os.path.isfile(ds_finetune_config):
+        raise ValueError("Set TARSE_DEEPSPEED_CONFIG to the experiment's DeepSpeed JSON configuration.")
+    ds_pretrain_config = ds_finetune_config
     trainable_params = "q_proj,k_proj,v_proj,o_proj,gate_proj,down_proj,up_proj,lm_head"
     output_dir = "./output"
     local_rank = int(os.environ.get("LOCAL_RANK", 0))  
@@ -217,10 +219,11 @@ def main():
     with open(data_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     flat_finetune_data = [sample for item in data for sample in item['train_finetune']]
-    compute_token_stats(flat_finetune_data, tokenizer)
     # 推理和训练
     answers = []
     model, tokenizer = prepare_model_and_tokenizer(model_name_or_path, lora_config, cache_dir, trainable_params)
+    compute_token_stats(flat_finetune_data, tokenizer)
+    os.makedirs(f"./log_{mode}", exist_ok=True)
     #model.to(device)
     #model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank], output_device=local_rank)
     initial_state_dict = model.state_dict()

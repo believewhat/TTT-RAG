@@ -1,3 +1,4 @@
+import os
 import colbert
 from colbert import Indexer, Searcher
 from colbert.infra import Run, RunConfig, ColBERTConfig
@@ -11,7 +12,7 @@ if __name__ == "__main__":
     doc_maxlen = 512  # truncate passages at 300 tokens
 
     index_name = "medcorp"
-    with open('/data/data_user_alpha/MedRAG/corpus/medcorp_chunks.pickle', 'rb') as file:
+    with open(os.environ.get('TARSE_MEDCORP_COLLECTION', './data/medcorp_chunks.pickle'), 'rb') as file:
         collection = pickle.load(file)
 
     with Run().context(RunConfig(nranks=4, experiment='knowledge')):  # nranks specifies the number of GPUs to use

@@ -66,7 +66,6 @@ if __name__ == "__main__":
     #data, _ = process_json_files(json_dir, collection, all_data, index)
     
     nbits = 2
-    #checkpoint_path = "/home/jwang/Project/uptodata/medical_rules/train_colbert/ColBERT/experiments/default/none/2025-01/14/20.43.13/checkpoints/colbert"
     checkpoint_path = "colbert-ir/colbertv1.9"
     experiment_root = "./experiments"
     experiment_name = "open_rule_math_qa"

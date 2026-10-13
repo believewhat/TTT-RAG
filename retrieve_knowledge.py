@@ -1,3 +1,4 @@
+import os
 import colbert
 from colbert import Searcher
 from colbert.infra import Run, RunConfig, ColBERTConfig
@@ -27,10 +28,10 @@ if __name__ == "__main__":
     doc_maxlen = 512  # truncate passages at 300 tokens
 
     index_name = "medcorp"
-    with open('/data/data_user_alpha/MedRAG/corpus/medcorp_chunks.pickle', 'rb') as file:
+    with open(os.environ.get('TARSE_MEDCORP_COLLECTION', './data/medcorp_chunks.pickle'), 'rb') as file:
         collection = pickle.load(file)
 
-    experiment_name = "/data/data_user_alpha/MedRAG/corpus/experiments/notebook"
+    experiment_name = os.environ.get('TARSE_RETRIEVAL_EXPERIMENT', './experiments/notebook')
     query_file = './output/queries_usmle_knowledge.tsv'
     index_file = './output/index_queries_usmle.tsv'
     json_file = './output/usmle_test_ir.json'

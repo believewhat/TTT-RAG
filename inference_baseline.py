@@ -24,7 +24,7 @@ if __name__ == "__main__":
     mode = "14"
     data = "medqa"
     output_path = f"qwen2.5_{mode}B_{data}_logical.json"
-    input_path = "/home/jwang/Project/rStar/data/MedQA/test.json"
+    input_path = os.environ.get("TARSE_BASELINE_INPUT", "./data/MedQA/test.json")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
     model = LLM(model=MODEL_NAME, max_model_len=2000)
 

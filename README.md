@@ -1,4 +1,64 @@
-# TTT-RAG
+# TARSE: Test-Time Adaptation via Retrieval of Skills and Experience for Clinical Reasoning Agents
+
+Code accompanying the ARR submission. The repository's historical name is TTT-RAG.
+
+TARSE separates retrieved **experiences** (reasoning traces from solved cases) from
+**skills** (clinical decision rules). Experiences support query-local adaptation;
+skills support verification of reasoning steps.
+
+## Repository guide
+
+| File | Purpose |
+| --- | --- |
+| `train_infer.py` | Legacy query-local LoRA adaptation and candidate reasoning-chain generation. |
+| `inference_baseline.py` | Baseline reasoning-chain generation with vLLM. |
+| `index_colbert.py` | Index a prepared medical passage collection. |
+| `retrieve_knowledge.py` | Retrieve medical passages for prepared queries. |
+| `retrieve_math.py` | Retrieve mathematical examples from a prepared collection. |
+| `retrieve_hotpotqa.py` | Legacy HotpotQA retrieval utility. |
+| `supervised-fine-tune.py` | Supervised fine-tuning utility. |
+| `colbert/` | Bundled ColBERT retrieval implementation. |
+
+## Setup and data
+
+The scripts require a CUDA-capable PyTorch environment. Adaptation additionally
+uses Transformers, PEFT, and DeepSpeed; baseline generation uses vLLM. Retrieval
+uses the bundled ColBERT implementation and its dependencies. Use an environment
+compatible with the selected model and CUDA installation.
+
+Model weights, benchmark datasets, prepared reasoning traces, passage collections,
+retrieval indexes, and the DeepSpeed configuration are not bundled. Prepare these
+artifacts separately and follow their original access and licensing conditions.
+Do not include test answers in an adaptation set.
+
+Run scripts from the repository root. Machine-specific locations can be supplied
+through these environment variables:
+
+| Variable | Default or requirement |
+| --- | --- |
+| `TARSE_DEEPSPEED_CONFIG` | Required by `train_infer.py`; path to the experiment's DeepSpeed JSON configuration. |
+| `TARSE_BASELINE_INPUT` | `./data/MedQA/test.json` |
+| `TARSE_MEDCORP_COLLECTION` | `./data/medcorp_chunks.pickle` |
+| `TARSE_WIKIPEDIA_COLLECTION` | `./data/wikipedia/all_chunks.pickle` |
+| `TARSE_RETRIEVAL_EXPERIMENT` | `./experiments/notebook` for the legacy retrieval scripts. |
+
+The baseline input is a JSON list containing `id` and `problem`. The adaptation
+script expects a JSON list with `input` and `train_finetune`; each retrieved
+training item has `input` and `output`. Retrieval scripts expect the prepared TSV
+queries, mappings, and collections indicated in their source.
+
+## Reproducibility scope
+
+These are research scripts, not a single end-to-end reproduction command. Model,
+prompt, retrieval, and training defaults in individual scripts must be matched to
+the particular experiment. The bundled legacy adaptation script is not the later
+Qwen3-Base SFT/OPD experiment runner. This release does not add or claim new
+benchmark results. The evaluation prompts below are retained from the original
+release; their reference answers are for evaluation, not test-time adaptation.
+
+The ARR packaging update refreshes documentation and configurable paths, removes
+tracked Python bytecode, and fixes tokenizer initialization order. It does not
+constitute a new GPU evaluation or an audit of every legacy training behavior.
 
 
 ## Evaluation Pipeline Prompt Example Template
